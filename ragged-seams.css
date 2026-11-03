@@ -1,0 +1,124 @@
+/* Ragged's hand-mended finish: quiet color, visible seams, no neon glow. */
+:root {
+  color-scheme: dark;
+  --bg: #24211d;
+  --side: #302922;
+  --surface: #302a24;
+  --surface-2: #383027;
+  --line: #665645;
+  --text: #eee4d4;
+  --muted: #b6a58f;
+  --accent: #d7b76f;
+  --accent-2: #b97754;
+}
+
+body {
+  background-color: var(--bg);
+  background-image: repeating-linear-gradient(90deg, transparent 0 7px, rgba(220, 199, 160, .018) 7px 8px);
+  color: var(--text);
+}
+body::before { display: none; }
+.sidebar {
+  background: #302922;
+  border-right: 1px solid #75634e;
+  box-shadow: none;
+}
+.sidebar::after {
+  inset: 9px 7px;
+  border: 1px dashed rgba(215, 183, 111, .36);
+  border-radius: 7px;
+}
+.brand-mark, .welcome-logo {
+  background: #d7b76f;
+  box-shadow: none;
+  transform: rotate(-4deg);
+  border: 2px solid #8e754a;
+}
+.brand-mark { border-radius: 5px 8px 5px 7px; }
+.welcome-logo { border-radius: 7px 11px 6px 9px; }
+.nav-item { border-radius: 4px 9px 5px 8px; }
+.nav-item.active {
+  color: #f0dfb8;
+  background: #463a2b;
+  border-color: #806b4e;
+  box-shadow: none;
+}
+.topbar { border-bottom: 1px dashed #665645; }
+.page-heading h1 { letter-spacing: -1px; }
+.date-chip {
+  border: 1px dashed #927953;
+  border-radius: 5px 8px 4px 7px;
+  background: #302a24;
+  box-shadow: none;
+  transform: rotate(.6deg);
+}
+.browser-window {
+  border: 1px solid #806d59;
+  border-radius: 9px 7px 10px 6px;
+  background: #28241f;
+  box-shadow: 5px 6px 0 rgba(0, 0, 0, .18);
+}
+.browser-window::before { display: none; }
+.browser-chrome { background: #383027; border-bottom: 1px dashed #806d59; }
+.browser-tab {
+  border: 1px solid #665645;
+  border-bottom: 0;
+  border-radius: 6px 8px 0 0;
+  background: #44392e;
+  box-shadow: none;
+  transform: rotate(-.5deg);
+}
+.tab-favicon { background: #d7b76f; box-shadow: none; }
+.new-tab, .browser-control {
+  border: 1px solid #665645;
+  border-radius: 5px 7px 4px 6px;
+  background: #302a24;
+  color: #ddc9aa;
+  box-shadow: none;
+}
+.address-bar {
+  border: 1px solid #665645;
+  border-radius: 5px 7px 4px 6px;
+  background: #24211d;
+  color: #c9b99f;
+  box-shadow: none;
+}
+.browser-content {
+  background: #29251f;
+}
+.welcome-logo { box-shadow: none; }
+.welcome-kicker, .eyebrow { color: #d7b76f; }
+.welcome-page h2 span, .heading-dot { color: #d7b76f; }
+.search-form {
+  border: 1px solid #75634e;
+  border-radius: 5px 9px 6px 8px;
+  background: #393128;
+  box-shadow: 3px 4px 0 rgba(0, 0, 0, .16);
+}
+.search-form button, .solid-button {
+  background: #d7b76f;
+  color: #29231a;
+  border-radius: 4px 7px 3px 6px;
+  box-shadow: none;
+}
+.quick-icon {
+  border: 1px solid #71604d;
+  border-radius: 6px 4px 7px 5px;
+  background: #3a3229;
+  box-shadow: none;
+}
+.browser-footnote { color: #ad9779; }
+.browser-status { border-top: 1px dashed #665645; background: #26221d; }
+.below-browser { color: #b6a58f; }
+.main-footer { border-top: 1px dashed #665645; }
+
+/* A small, consistent running stitch gives the panels a handmade edge. */
+.browser-window, .date-chip, .search-form, .settings-card, .ai-card, .game-feature {
+  outline: 1px dotted rgba(215, 183, 111, .25);
+  outline-offset: 3px;
+}
+
+@media (max-width: 620px) {
+  .sidebar::after { inset: 7px 4px; }
+  .browser-window { box-shadow: 3px 4px 0 rgba(0, 0, 0, .18); }
+}
