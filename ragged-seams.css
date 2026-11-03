@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
+
 /* Ragged's hand-mended finish: quiet color, visible seams, no neon glow. */
 :root {
   color-scheme: dark;
@@ -10,12 +12,15 @@
   --muted: #b6a58f;
   --accent: #d7b76f;
   --accent-2: #b97754;
+  --font: 'ZCOOL KuaiLe', cursive;
+  --display: 'ZCOOL KuaiLe', cursive;
 }
 
 body {
   background-color: var(--bg);
   background-image: repeating-linear-gradient(90deg, transparent 0 7px, rgba(220, 199, 160, .018) 7px 8px);
   color: var(--text);
+  font-family: 'ZCOOL KuaiLe', cursive;
 }
 body::before { display: none; }
 .sidebar {
@@ -83,9 +88,7 @@ body::before { display: none; }
   color: #c9b99f;
   box-shadow: none;
 }
-.browser-content {
-  background: #29251f;
-}
+.browser-content { background: #29251f; }
 .welcome-logo { box-shadow: none; }
 .welcome-kicker, .eyebrow { color: #d7b76f; }
 .welcome-page h2 span, .heading-dot { color: #d7b76f; }
