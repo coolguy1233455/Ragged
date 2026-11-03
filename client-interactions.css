@@ -1,206 +1,74 @@
-/* Layout and AI page. Keep the main canvas at the viewport size; never page-scroll. */
-html, body {
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  margin: 0;
-  overflow: hidden !important;
-  overscroll-behavior: none;
-}
-body {
-  position: fixed;
-  inset: 0;
-  font-family: 'ZCOOL KuaiLe', cursive;
-  touch-action: none;
-}
-.client-shell {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100vh;
-  height: 100dvh;
-  min-height: 0;
-  overflow: hidden;
-}
+/* Clickable page views and sidebar hide/show handle. */
+body { touch-action: pan-y; }
 .sidebar {
   position: fixed;
   z-index: 20;
-  inset: 0 auto auto 0;
+  top: 0;
+  left: 0;
   width: min(232px, 82vw);
-  min-width: 0;
   height: 100vh;
   height: 100dvh;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  min-width: 0;
+  overflow: auto;
+  transform: translateY(0);
   transition: transform 200ms ease;
 }
-.client-shell.sidebar-collapsed .sidebar {
-  transform: translateY(-101%);
-}
-.main-panel {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  max-width: none;
-  height: 100vh;
-  height: 100dvh;
-  min-width: 0;
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.topbar {
-  position: relative;
-  z-index: 2;
-  flex: 0 0 58px;
-  padding: 0 18px 0 62px;
-}
-.sidebar-toggle {
-  position: fixed;
-  z-index: 40;
-  top: 12px;
-  left: 12px;
+.client-shell.sidebar-collapsed .sidebar { transform: translateY(-101%); }
+.sidebar-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-right: 9px; }
+.sidebar-toggle, .sidebar-reopen {
+  display: grid;
+  place-items: center;
   width: 34px;
   height: 34px;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
+  flex: 0 0 34px;
   border: 1px solid #806d59;
   border-radius: 6px 8px 5px 7px;
   background: #302922;
   color: #eee4d4;
+  font: inherit;
+  font-size: 19px;
+  line-height: 1;
   cursor: pointer;
 }
-.sidebar-toggle span { display: block; width: 16px; height: 2px; border-radius: 2px; background: currentColor; }
-.sidebar-toggle:hover { background: #463a2b; }
-.sidebar-toggle:focus-visible { outline: 2px solid #d7b76f; outline-offset: 2px; }
-.browser-page.page-view.visible, .ai-page.page-view.visible {
-  display: flex;
-  flex: 1 1 auto;
-  width: 100%;
-  min-width: 0;
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+.sidebar-toggle:hover, .sidebar-reopen:hover { background: #463a2b; }
+.sidebar-toggle:focus-visible, .sidebar-reopen:focus-visible { outline: 2px solid #d7b76f; outline-offset: 2px; }
+.sidebar-reopen {
+  position: fixed;
+  z-index: 30;
+  top: 10px;
+  left: 10px;
+  display: none;
 }
-.browser-window {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  width: 100%;
-  max-width: none;
-  min-width: 0;
-  min-height: 0;
-  margin: 0;
-  border-radius: 0;
-  box-shadow: none;
-  overflow: hidden;
-}
+.client-shell.sidebar-collapsed .sidebar-reopen { display: grid; }
+.main-panel { position: fixed; inset: 0; width: 100%; height: 100vh; height: 100dvh; max-width: none; min-width: 0; min-height: 0; margin: 0; padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.topbar { position: relative; z-index: 2; flex: 0 0 58px; padding: 0 18px; }
+.page-view { display: none; }
+.page-view.visible { display: flex; flex: 1 1 auto; min-width: 0; min-height: 0; overflow: hidden; }
+.browser-page.page-view.visible { padding: 0; }
+.browser-window { display: flex; flex: 1 1 auto; flex-direction: column; width: 100%; max-width: none; min-width: 0; min-height: 0; margin: 0; border-radius: 0; box-shadow: none; overflow: hidden; }
 .browser-chrome, .browser-status { flex: 0 0 auto; }
 .browser-content { flex: 1 1 auto; min-width: 0; min-height: 0; overflow: hidden; }
-.welcome-page { max-width: 100%; max-height: 100%; overflow: hidden; }
-.ai-page { align-items: stretch; justify-content: stretch; background: #24211d; }
-.ai-workspace {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  min-width: 0;
-  min-height: 0;
-  width: 100%;
-  padding: 34px 22px 24px;
-}
-.ai-mark {
-  width: 52px;
-  height: 52px;
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  border: 2px solid #8e754a;
-  border-radius: 11px 8px 12px 9px;
-  background: #d7b76f;
-  color: #29231a;
-  font-size: 30px;
-  transform: rotate(-4deg);
-}
-.ai-conversation {
-  display: flex;
-  flex: 0 1 auto;
-  flex-direction: column;
-  gap: 12px;
-  width: min(100%, 760px);
-  max-height: min(56vh, 500px);
-  overflow: auto;
-  overscroll-behavior: contain;
-  scrollbar-color: #806d59 transparent;
-}
-.ai-message {
-  width: fit-content;
-  max-width: 84%;
-  padding: 11px 14px;
-  border: 1px solid #665645;
-  border-radius: 8px 12px 7px 10px;
-  background: #302a24;
-  color: #eee4d4;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  line-height: 1.5;
-}
-.ai-message.user { align-self: flex-end; background: #463a2b; border-color: #806b4e; }
-.ai-message.assistant { align-self: flex-start; }
-.ai-message.error { border-color: #9e6049; }
-.ai-composer {
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-  width: min(100%, 760px);
-  min-height: 54px;
-  padding: 8px 9px 8px 15px;
-  border: 1px solid #75634e;
-  border-radius: 8px 12px 7px 10px;
-  background: #393128;
-}
-.ai-composer textarea {
-  flex: 1;
-  min-width: 0;
-  max-height: 24vh;
-  resize: none;
-  border: 0;
-  outline: 0;
-  padding: 8px 0;
-  background: transparent;
-  color: #eee4d4;
-  font: inherit;
-  line-height: 1.4;
-  touch-action: auto;
-}
-.ai-composer textarea::placeholder { color: #ad9779; }
-.ai-composer button {
-  width: 36px;
-  height: 36px;
-  flex: 0 0 36px;
-  border: 0;
-  border-radius: 5px 8px 4px 7px;
-  background: #d7b76f;
-  color: #29231a;
-  font: inherit;
-  font-size: 22px;
-  cursor: pointer;
-}
-.ai-composer button:disabled { opacity: .55; cursor: wait; }
+.games-page, .settings-page { align-items: flex-start; justify-content: center; overflow: auto !important; overscroll-behavior: contain; padding: clamp(20px, 5vh, 60px) 20px; }
+.section-page-content { width: min(760px, 100%); margin: 0 auto; }
+.section-page-content h1 { margin: 0 0 20px; color: #eee4d4; font: 32px 'ZCOOL KuaiLe', cursive; }
+.game-form { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px; border: 1px solid #75634e; border-radius: 8px 12px 7px 10px; background: #302a24; }
+.game-form input { flex: 1 1 180px; min-width: 0; height: 40px; padding: 0 11px; border: 1px solid #665645; border-radius: 5px 8px 6px 7px; background: #24211d; color: #eee4d4; font: inherit; }
+.game-form input::placeholder { color: #ad9779; }
+.game-form button, .reset-button { min-height: 40px; padding: 0 14px; border: 1px solid #8e754a; border-radius: 5px 8px 4px 7px; background: #d7b76f; color: #29231a; font: inherit; cursor: pointer; }
+.game-library { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin-top: 18px; }
+.empty-library { color: #b6a58f; }
+.game-card { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 13px; border: 1px solid #665645; border-radius: 8px 12px 7px 10px; background: #302a24; color: #eee4d4; }
+.game-card strong { flex: 1; overflow-wrap: anywhere; }
+.game-launch, .game-remove { color: #d7b76f; font: inherit; }
+.game-remove { border: 0; background: transparent; cursor: pointer; }
+.settings-page .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 16px; border: 1px solid #665645; border-radius: 8px 12px 7px 10px; background: #302a24; color: #eee4d4; }
+.settings-page .setting-row input { width: 18px; height: 18px; accent-color: #d7b76f; }
+.reset-button { margin-top: 16px; }
 @media (max-width: 620px) {
-  .topbar { flex-basis: 52px; padding-left: 58px; padding-right: 10px; }
-  .sidebar-toggle { top: 9px; left: 10px; }
-  .ai-workspace { padding: 20px 12px 14px; gap: 12px; }
-  .ai-mark { width: 42px; height: 42px; font-size: 25px; }
+  .sidebar { width: min(232px, 86vw); }
+  .topbar { flex-basis: 50px; padding-left: 52px; }
+  .games-page, .settings-page { padding: 20px 12px; }
+  .game-form { flex-direction: column; }
+  .game-form input { flex-basis: 40px; width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .sidebar { transition: none; } }
