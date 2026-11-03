@@ -1,8 +1,7 @@
 (() => {
-  const shell = document.querySelector('.client-shell');
+  const shell = document.getElementById('clientShell');
   const sidebar = document.getElementById('sidebar');
-  const hideSidebarButton = document.getElementById('sidebarToggle');
-  const showSidebarButton = document.getElementById('sidebarReopen');
+  const toggle = document.getElementById('sidebarToggle');
   const views = [...document.querySelectorAll('[data-view]')];
   const navLinks = [...document.querySelectorAll('.nav-item[data-section]')];
   const sectionTitle = document.getElementById('sectionTitle');
@@ -11,46 +10,38 @@
   const gameName = document.getElementById('gameName');
   const gameUrl = document.getElementById('gameUrl');
   const gameLibrary = document.getElementById('gameLibrary');
-  const storage = {
-    get(key, fallback) {
-      try {
-        const value = localStorage.getItem(key);
-        return value === null ? fallback : value;
-      } catch {
-        return fallback;
-      }
-    },
-    set(key, value) {
-      try { localStorage.setItem(key, value); } catch { /* Storage can be unavailable in private contexts. */ }
-    }
-  };
 
-  function setSidebarOpen(open, persist = true) {
-    if (!shell || !sidebar) return;
-    shell.classList.toggle('sidebar-collapsed', !open);
-    hideSidebarButton?.setAttribute('aria-expanded', String(open));
-    showSidebarButton?.setAttribute('aria-expanded', String(open));
-    sidebar.setAttribute('aria-hidden', String(!open));
-    if (sidebarPreference) sidebarPreference.checked = open;
-    if (persist) storage.set('ragged-sidebar-open', String(open));
+  function readStorage(key, fallback) {
+    try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
+  }
+  function writeStorage(key, value) {
+    try { localStorage.setItem(key, value); } catch { /* Local storage may be disabled. */ }
   }
 
-  hideSidebarButton?.addEventListener('click', () => setSidebarOpen(false));
-  showSidebarButton?.addEventListener('click', () => setSidebarOpen(true));
-  sidebarPreference?.addEventListener('change', () => setSidebarOpen(sidebarPreference.checked));
+  function setSidebarOpen(open, save = true) {
+    shell.classList.toggle('sidebar-collapsed', !open);
+    sidebar.setAttribute('aria-hidden', String(!open));
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Hide sidebar' : 'Show sidebar');
+    toggle.querySelector('span').textContent = open ? '↑' : '↓';
+    if (sidebarPreference) sidebarPreference.checked = open;
+    if (save) writeStorage('ragged-sidebar-open', String(open));
+  }
 
-  function getGames() {
+  toggle.addEventListener('click', () => {
+    setSidebarOpen(shell.classList.contains('sidebar-collapsed'));
+  });
+
+  function readGames() {
     try {
-      const saved = JSON.parse(storage.get('ragged-games', '[]'));
-      return Array.isArray(saved) ? saved.filter((game) => game && typeof game.name === 'string') : [];
-    } catch {
-      return [];
-    }
+      const items = JSON.parse(readStorage('ragged-games', '[]'));
+      return Array.isArray(items) ? items.filter((item) => item && typeof item.name === 'string') : [];
+    } catch { return []; }
   }
 
   function renderGames() {
     if (!gameLibrary) return;
-    const games = getGames();
+    const games = readGames();
     gameLibrary.replaceChildren();
     if (!games.length) {
       const empty = document.createElement('p');
@@ -59,33 +50,30 @@
       gameLibrary.appendChild(empty);
       return;
     }
-
     games.forEach((game, index) => {
       const card = document.createElement('article');
       card.className = 'game-card';
       const name = document.createElement('strong');
       name.textContent = game.name;
       card.appendChild(name);
-
       if (game.url) {
-        const launch = document.createElement('a');
-        launch.href = game.url;
-        launch.target = '_blank';
-        launch.rel = 'noopener noreferrer';
-        launch.className = 'game-launch';
-        launch.textContent = 'Open';
-        card.appendChild(launch);
+        const open = document.createElement('a');
+        open.className = 'game-launch';
+        open.href = game.url;
+        open.target = '_blank';
+        open.rel = 'noopener noreferrer';
+        open.textContent = 'Open';
+        card.appendChild(open);
       }
-
       const remove = document.createElement('button');
-      remove.type = 'button';
       remove.className = 'game-remove';
+      remove.type = 'button';
       remove.textContent = 'Remove';
       remove.setAttribute('aria-label', `Remove ${game.name}`);
       remove.addEventListener('click', () => {
-        const latestGames = getGames();
-        latestGames.splice(index, 1);
-        storage.set('ragged-games', JSON.stringify(latestGames));
+        const updated = readGames();
+        updated.splice(index, 1);
+        writeStorage('ragged-games', JSON.stringify(updated));
         renderGames();
       });
       card.appendChild(remove);
@@ -95,15 +83,13 @@
 
   gameForm?.addEventListener('submit', (event) => {
     event.preventDefault();
-    const name = gameName?.value.trim();
+    const name = gameName.value.trim();
     if (!name) return;
-
     let url = '';
-    const rawUrl = gameUrl?.value.trim();
-    if (rawUrl) {
+    if (gameUrl.value.trim()) {
       try {
-        const parsed = new URL(rawUrl);
-        if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Unsupported URL protocol');
+        const parsed = new URL(gameUrl.value.trim());
+        if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Unsupported protocol');
         url = parsed.href;
       } catch {
         gameUrl.setCustomValidity('Enter a valid http or https link.');
@@ -111,26 +97,27 @@
         return;
       }
     }
-
-    gameUrl?.setCustomValidity('');
-    const games = getGames();
+    gameUrl.setCustomValidity('');
+    const games = readGames();
     games.push({ name, url });
-    storage.set('ragged-games', JSON.stringify(games));
+    writeStorage('ragged-games', JSON.stringify(games));
     gameForm.reset();
     renderGames();
-    gameName?.focus();
+    gameName.focus();
   });
   gameUrl?.addEventListener('input', () => gameUrl.setCustomValidity(''));
   document.getElementById('clearGames')?.addEventListener('click', () => {
-    storage.set('ragged-games', '[]');
+    writeStorage('ragged-games', '[]');
     renderGames();
   });
+  sidebarPreference?.addEventListener('change', () => setSidebarOpen(sidebarPreference.checked));
 
-  function showSection(section, updateAddress = true) {
+  function showSection(section, updateHash = true) {
     if (!views.some((view) => view.dataset.view === section)) section = 'browser';
     views.forEach((view) => {
-      view.classList.toggle('visible', view.dataset.view === section);
-      view.setAttribute('aria-hidden', String(view.dataset.view !== section));
+      const active = view.dataset.view === section;
+      view.classList.toggle('visible', active);
+      view.setAttribute('aria-hidden', String(!active));
     });
     navLinks.forEach((link) => {
       const active = link.dataset.section === section;
@@ -138,27 +125,25 @@
       if (active) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
-    if (sectionTitle) sectionTitle.textContent = section.charAt(0).toUpperCase() + section.slice(1);
-    if (updateAddress && location.hash !== `#${section}`) history.replaceState(null, '', `#${section}`);
+    sectionTitle.textContent = section[0].toUpperCase() + section.slice(1);
+    if (updateHash && location.hash !== `#${section}`) history.replaceState(null, '', `#${section}`);
   }
 
   navLinks.forEach((link) => link.addEventListener('click', (event) => {
     event.preventDefault();
     showSection(link.dataset.section);
-    if (window.matchMedia('(max-width: 620px)').matches) setSidebarOpen(false);
+    if (matchMedia('(max-width: 620px)').matches) setSidebarOpen(false);
   }));
-
   document.querySelector('.brand')?.addEventListener('click', (event) => {
     event.preventDefault();
     showSection('browser');
   });
-
   window.addEventListener('hashchange', () => showSection(location.hash.slice(1), false));
   window.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && shell && !shell.classList.contains('sidebar-collapsed')) setSidebarOpen(false);
+    if (event.key === 'Escape' && !shell.classList.contains('sidebar-collapsed')) setSidebarOpen(false);
   });
 
-  setSidebarOpen(storage.get('ragged-sidebar-open', 'true') !== 'false', false);
+  setSidebarOpen(readStorage('ragged-sidebar-open', 'true') !== 'false', false);
   renderGames();
   showSection(location.hash.slice(1) || 'browser', false);
 })();
