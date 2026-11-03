@@ -50,7 +50,7 @@ body { touch-action: pan-y; }
 .browser-content { flex: 1 1 auto; min-width: 0; min-height: 0; overflow: hidden; }
 .games-page, .settings-page { align-items: flex-start; justify-content: center; overflow: auto !important; overscroll-behavior: contain; padding: clamp(20px, 5vh, 60px) 20px; }
 .section-page-content { width: min(760px, 100%); margin: 0 auto; }
-.section-page-content h1 { margin: 0 0 20px; color: #eee4d4; font: 32px 'ZCOOL KuaiLe', cursive; }
+.section-page-content h1 { margin: 0 0 20px; color: #eee4d4; font: 32px 'ZCOOL KuaiLe', Arial, Helvetica, sans-serif; }
 .game-form { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px; border: 1px solid #75634e; border-radius: 8px 12px 7px 10px; background: #302a24; }
 .game-form input { flex: 1 1 180px; min-width: 0; height: 40px; padding: 0 11px; border: 1px solid #665645; border-radius: 5px 8px 6px 7px; background: #24211d; color: #eee4d4; font: inherit; }
 .game-form input::placeholder { color: #ad9779; }
@@ -64,6 +64,13 @@ body { touch-action: pan-y; }
 .settings-page .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 16px; border: 1px solid #665645; border-radius: 8px 12px 7px 10px; background: #302a24; color: #eee4d4; }
 .settings-page .setting-row input { width: 18px; height: 18px; accent-color: #d7b76f; }
 .reset-button { margin-top: 16px; }
+
+/* Use a conventional sans-serif if the requested display font is unavailable. */
+body, button, input, textarea, select,
+.section-page-content h1 {
+  font-family: 'ZCOOL KuaiLe', Arial, Helvetica, sans-serif;
+}
+
 @media (max-width: 620px) {
   .sidebar { width: min(232px, 86vw); }
   .topbar { flex-basis: 50px; padding-left: 52px; }
