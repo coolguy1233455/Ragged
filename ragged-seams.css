@@ -157,6 +157,22 @@ body {
 * { min-width: 0; }
 body, .client-shell, .main-panel, .browser-page, .browser-window { overscroll-behavior: none; }
 
+/* Ragged client version badge beside the wordmark. */
+.brand::after {
+  content: "v1";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  padding: 2px 6px 3px;
+  border: 1px dashed #927953;
+  border-radius: 4px 6px 3px 5px;
+  color: #d7b76f;
+  font: 12px/1 'ZCOOL KuaiLe', Arial, Helvetica, sans-serif;
+  letter-spacing: 0;
+  transform: rotate(2deg);
+}
+
 @media (max-width: 620px) {
   .topbar { flex-basis: 58px; padding-left: 58px; padding-right: 10px; }
   .sidebar-toggle { top: 11px; left: 10px; }
